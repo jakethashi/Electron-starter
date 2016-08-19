@@ -1,8 +1,11 @@
 var webpack = require('webpack');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
     entry: {
-        app: ['webpack/hot/dev-server', './app/app.ts'],
+        polyfills: './app/polyfills.ts',
+        vendor: './app/vendor.ts',
+        app: ['webpack/hot/dev-server', './app/main.ts'],
     },
     output: {
         path: './public/built',
@@ -18,13 +21,18 @@ module.exports = {
     },
     module: {
         loaders: [
-            { test: /\.tsx?$/, loader: 'ts-loader', exclude: /node_modules/  },
-            { test: /\.js$/, loader: 'babel-loader', exclude: /node_modules/ },
+            { test: /\.tsx?$/, loaders: ['ts', 'angular2-template-loader'] },
             { test: /\.css$/, loader: 'style-loader!css-loader' },
             { test: /\.scss$/, loader: 'style!css!sass!' },
         ]
     },
     plugins: [
+        new webpack.optimize.CommonsChunkPlugin({
+            name: ['app', 'vendor', 'polyfills']
+        }),
+        new HtmlWebpackPlugin({
+            template: 'index.html'
+        }),
         new webpack.HotModuleReplacementPlugin()
     ]
 }
